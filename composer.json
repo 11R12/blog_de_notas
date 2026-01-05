@@ -1,0 +1,21 @@
+{
+    "name": "rosbert/blog_de_notas",
+    "description": "No es una libreria. Agrego estos campos para evitar los warning de diagnose",
+    "type": "project",
+    "require": {
+        "monolog/monolog": "^3.9",
+        "ramsey/uuid": "^4.9"
+    },
+    "license": "None",
+    "autoload": {
+        "psr-4": {
+            "BlogDeNotas\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Rosbert Alexander Rojas Melendez"
+        }
+    ],
+    "minimum-stability": "stable"
+}
