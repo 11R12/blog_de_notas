@@ -1,0 +1,1 @@
+<h2>Ha ocurrido un error. Intente recargar la pagina o reiniciar la session...</h2>

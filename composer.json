@@ -1,21 +1,24 @@
 {
     "name": "rosbert/blog_de_notas",
-    "description": "No es una libreria. Agrego estos campos para evitar los warning de diagnose",
+    "description": "Core Backend Engine para gestión de notas con arquitectura POO y UUIDs binarios",
     "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Rosbert Alexander Rojas Melendez",
+            "email": "l40820328@gmail.com"
+        }
+    ],
     "require": {
-        "monolog/monolog": "^3.9",
-        "ramsey/uuid": "^4.9"
+        "php": ">=8.1",
+        "monolog/monolog": "^3.5",
+        "ramsey/uuid": "^4.7",
+        "vlucas/phpdotenv": "^5.6"
     },
-    "license": "None",
     "autoload": {
         "psr-4": {
             "BlogDeNotas\\": "src/"
         }
     },
-    "authors": [
-        {
-            "name": "Rosbert Alexander Rojas Melendez"
-        }
-    ],
     "minimum-stability": "stable"
 }

@@ -1,6 +1,6 @@
 <?php
 //Forzar tipado stricto
-declare(strict_types = 1);
+declare(strict_types = 1); 
 
 //Incluir el autocargador de composer para las clases e interfaces
 include("../../vendor/autoload.php");
@@ -16,11 +16,9 @@ include("../include.php");
 
 #1. Simulamos entrada de datos de un user
 $pass = "123456789";
-
-
-$uuid = Uuid::uuid4()->getBytes();
-$nombre  = "Alexander";
-$correo = "melendezGmail.com";
+$uuid = Uuid::uuid4()->getBytes(); //generamos un id para el mismo
+$nombre  = "Rosbert";
+$correo = "alexalexGmail.com"; //No repetir correo
 $passHash = hash( "md5", $pass);
 $telefono = "123123213";
 

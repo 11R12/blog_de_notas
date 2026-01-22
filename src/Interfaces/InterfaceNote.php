@@ -34,7 +34,7 @@ interface InterfaceNote{
 	/**
 	 * @return Un array de objetos Note ordenados por fecha de forma ASC o DESC
 	 */
-	public function filterCreationDate(string $userUuid, bool $optionOrder = false): array;
+	public function filterCreationDate(string $userUuid, bool $optionOrder = false): ?array;
 
 	/**
 	 * @return Un array de objetos Note

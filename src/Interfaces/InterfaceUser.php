@@ -20,4 +20,5 @@ interface InterfaceUser{
 	#eliminar usuario
 	public function deleteUserWith(string $uuid): bool;
 
+
 }

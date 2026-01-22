@@ -19,6 +19,6 @@ $allCategorys = new CategoryStructure($conexion);
 
 $user = $forAllUsers->readUserWith("melendezGmail.com");
 
-$allCategorys->createCategory('Aqui tambien hay notas, mira...', $user->getUuid());
+$allCategorys->createCategory('Nueva categoria..', $user->getUuid());
 
 

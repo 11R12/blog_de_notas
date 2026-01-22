@@ -2,4 +2,4 @@
 .lock
 *.log
 .vscode/
-.idea/
+.env

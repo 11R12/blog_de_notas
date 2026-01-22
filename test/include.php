@@ -6,7 +6,7 @@ include("../../vendor/autoload.php");
 use BlogDeNotas\Database\Database;
 
 
-//Datos para iniciar la conexion a la base de datos | NOTA: Esto debe ir en un INI.file
+//Datos para iniciar la conexion a la base de datos | NOTA: recordar poner los creedenciales en un archivo aparte.
 $host = 'localhost';
 $db = "blog_notas";
 $user = "root";

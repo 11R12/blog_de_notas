@@ -2,14 +2,22 @@
 
 namespace BlogDeNotas\Modelos;
 
+use Ramsey\Uuid\Uuid;
+
 class Note {
 
 	private array $nota;
 	private array $dataUpdate;
 
 
-	public function __construct(array $nota)
+	public function __construct(array $nota, bool $new = true)
 	{
+		if($new)
+		{
+			#generamos y añadimos un UUID al user
+			$nota['uuid'] = $this->generateUuid();
+		}
+
 		$this->nota = $nota;
 		
 	}
@@ -99,6 +107,7 @@ class Note {
 	#uuid del user al que hace referencia
 	public function getUuidUserReference()
 	{
+		$this->nota['usuario_uuid'] = Uuid::fromString($this->nota['usuario_uuid'])->getBytes();
 
 		return $this->nota['usuario_uuid'];
 
@@ -115,13 +124,16 @@ class Note {
 
 	public function toArray():array
 	{
+		$this->nota['usuario_uuid'] = Uuid::fromString($this->nota['usuario_uuid'])->getBytes();
+		$this->nota['uuid'] = Uuid::fromString($this->nota['uuid'])->getBytes();
+
 		return $this->nota;
 
 	}
 
 	public function dataUpdateToArray():array 
 	{
-		$this->dataUpdate['uuid'] = $this->nota['uuid'];
+		$this->dataUpdate['uuid'] = Uuid::fromString($this->nota['uuid'])->getBytes();//Responsabilizar a la AbsSQL de esto 
 		$this->dataUpdate['titulo'] = $this->nota['titulo'];
 		$this->dataUpdate['contenido'] = $this->nota['contenido'];
 		$this->dataUpdate['categoria_id'] = $this->nota['categoria_id'];
@@ -129,6 +141,12 @@ class Note {
 
 		return $this->dataUpdate;
 
+
+	}
+
+	private function generateUuid(): string {
+
+		return Uuid::uuid4()->toString();
 
 	}
 	

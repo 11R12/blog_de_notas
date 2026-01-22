@@ -7,6 +7,7 @@ use BlogDeNotas\Database\Database;
 use BlogDeNotas\Modelos\Note;	
 use BlogDeNotas\Modelos\User;   	 
 use BlogDeNotas\Interfaces\InterfaceNote;
+use Ramsey\Uuid\Uuid;
 use Exception;
 
 class NoteEstruct implements InterfaceNote{
@@ -19,7 +20,7 @@ class NoteEstruct implements InterfaceNote{
 	private string $updateNoteSql = 'UPDATE notas SET categoria_id = :categoria_id, titulo = :titulo, contenido = :contenido WHERE uuid = :uuid AND usuario_uuid = :usuario_uuid';
 
 	//COMANDO PARA OBTENER LOS DATOS DE UNA NOTA ESPECIFICA BASANDONOS EN SU UUID Y EL UUID DEL USUARIO
-	private string $readANoteSql = 'SELECT * FROM notas WHERE id = :id AND usuario_uuid = :usuario_uuid';
+	private string $readANoteSql = 'SELECT * FROM blog_notas.notas WHERE uuid = :uuid AND usuario_uuid = :usuario_uuid';
 
 	//COMANDO PARA ELIMINAR UNA NOTA ESPECIFICA BASANDONOS EN SU UUID Y EL UUID DEL USUARIO
 	private string $deleteANoteSql= 'DELETE FROM notas WHERE uuid = :uuid AND usuario_uuid = :usuario_uuid';
@@ -70,12 +71,13 @@ class NoteEstruct implements InterfaceNote{
 {
     if(!NoteEstruct::existsConexion()) throw new \RuntimeException('No existe conexion establecida con la DB');
 
+
     try 
     {
         $stmt = NoteEstruct::$db->prepare($this->insertNoteSql);
 
         // Vinculamos manualmente para que los UUIDs se envíen como BINARIOS
-        $stmt->bindValue(':uuid',         $nota->getUuid(),         \PDO::PARAM_LOB);
+        $stmt->bindValue(':uuid',         Uuid::fromString($nota->getUuid())->getBytes(),         \PDO::PARAM_LOB);
         $stmt->bindValue(':usuario_uuid', $nota->getUuidUserReference(), \PDO::PARAM_LOB);
         $stmt->bindValue(':categoria_id', $nota->getCategoriaId(),  \PDO::PARAM_INT);
         $stmt->bindValue(':titulo',       $nota->getTitulo(),       \PDO::PARAM_STR);
@@ -95,8 +97,6 @@ class NoteEstruct implements InterfaceNote{
 	public function readAllNotes(string $userUuid): array
 	{	
 		if(!NoteEstruct::existsConexion()) throw new \RuntimeException('No existe conexion establecida con la DB');
-
-		
 
 		try
 		{
@@ -120,14 +120,20 @@ class NoteEstruct implements InterfaceNote{
 				#guardamos los datos de cada nota en un array para pasar al constructor Note
 				$dataToObj[$propiedad] = $valor;	
 
+				if($propiedad === 'uuid') {
+					$dataToObj[$propiedad] = Uuid::fromBytes($valor)->toString();
+				}
+
+				if($propiedad == 'usuario_uuid'){ 
+					$dataToObj[$propiedad] = Uuid::fromBytes($valor)->toString();
+				}
+
 			}
 
 			#instanciamos, y guardamos el objeto en un nuevo array.
-			$arrayOfNotes[] = new Note($dataToObj); 
+			$arrayOfNotes[] = new Note($dataToObj, false); 
 
 		}
-
-		
 
 		return $arrayOfNotes;
 
@@ -135,16 +141,29 @@ class NoteEstruct implements InterfaceNote{
 
 
 	
-	public function readANote(string $userUuid, string $id): Note
+	public function readANote(string $userUuid, string $uuid): Note
 	{
 		if(!NoteEstruct::existsConexion()) throw new \RuntimeException('No existe conexion establecida con la DB');
 
 		try
 		{
+		
+			$uuid = Uuid::fromString($uuid)->getBytes();
+			$userUuid = Uuid::fromString($userUuid)->getBytes();
+			
 
 			$stmt = NoteEstruct::$db->prepare($this->readANoteSql);
 
-			$stmt->execute(['id' => $id, 'usuario_uuid' => $userUuid]);
+			$stmt->bindParam(':uuid', $uuid, \PDO::PARAM_STR);
+			$stmt->bindParam(':usuario_uuid', $userUuid, \PDO::PARAM_STR);
+
+			// Verifica que los bytes tengan la longitud correcta (deben ser 16)
+var_dump(strlen($uuid)); 
+var_dump(bin2hex($uuid)); // Esto te dará la representación hexadecimal que puedes comparar en tu DB
+
+			$stmt->execute();
+
+			return new Note($stmt->fetch(\PDO::FETCH_ASSOC));
 
 		}catch(\Exception $e)
 		{ 
@@ -152,8 +171,6 @@ class NoteEstruct implements InterfaceNote{
 			throw new \PDOException('No se puedo obtener una nota especifica de la base datos');
 
 		}
-
-		return new Note($stmt->fetch(\PDO::FETCH_ASSOC));
 
 	}
 
@@ -215,13 +232,15 @@ class NoteEstruct implements InterfaceNote{
 
 
 	#obtener las notas de un usuario ordenadas por New -> OLD | OLD -> NEW
-	public function filterCreationDate(string $userUuid, bool $optionOrder = false): array
+	public function filterCreationDate(string $userUuid, bool $optionOrder = false): ?array
 	{
 		if(!NoteEstruct::existsConexion()) throw new \RuntimeException('No existe conexion establecida con la DB');
 
 		if ($optionOrder === true) $optionOrder = self::ORDER_NEW_OLD;
 
-		if ($optionOrder === false) $optionOrder = self::ORDER_OLD_NEW; 
+		if ($optionOrder === false) $optionOrder = self::ORDER_OLD_NEW;
+
+		$arrayOfNotes = []; 
 
 		try
 		{

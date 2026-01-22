@@ -12,10 +12,14 @@ include("../include.php");
 
 $forAllUsers = new UserStructure(database::getConnection());
 
-$user = $forAllUsers->readUserWith("alexanderGmail.com");
 
+#obtenemos el usuario
+$user = $forAllUsers->readUserWith("alexalexGmail.com");
+
+#obtenemos el uuid
 $uuid = $user->getUuid();
 
+#eliminamos por uuid
 if($forAllUsers->deleteUserWith($uuid))
 {
 	echo "User eliminado";

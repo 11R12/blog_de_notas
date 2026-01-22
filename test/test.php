@@ -1,5 +1,9 @@
 <?php
 
+
+
+
+
 //Forzar tipado stricto
 declare(strict_types = 1);
 

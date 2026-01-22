@@ -12,7 +12,7 @@ include("../include.php");
 
 $forAllUsers = new UserStructure(database::getConnection());
 
-$user = $forAllUsers->readUserWith("melendezGmail.com");
+$user = $forAllUsers->readUserWith("alexalexGmail.com");
 
 foreach($user->toArray() as $propiedad => $valor)
 {

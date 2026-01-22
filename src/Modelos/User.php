@@ -2,117 +2,102 @@
 
 namespace BlogDeNotas\Modelos;
 
+use Ramsey\Uuid\Uuid;
+
 
 class User{
 
 	private array $data; 
 
-	public function __construct(array $data)
+	public function __construct(array $data, bool $new = true)
 	{
-		$this->data = $data ;
+		//Si el usuario es nuevo, hashseamos su contraseña y le asiganmos un UUID
+		if($new){
+
+			$data['password'] = $this->encryptPass($data['password']);
+
+			$data['uuid'] = $this->generateUuid();
+		}
+		
+		$this->data = $data;
 	}
 
-	//El user puede ver los siguientes datos
+
+
+
+
+	//GETTERS
 
 	#nombre
-	public function getNombre(): string
-	{
-
+	public function getNombre(): string{
 		return $this->data['nombre'];
-
 	}
 
 	#correo
-	public function getCorreo(): string
-	{
-		
+	public function getCorreo(): string{
 		return $this->data['correo'];
+	}
 
+	#correo
+	public function getPassword(): string{
+		return $this->data['password'];
 	}
 
 	#telefono
-	public function getTelefono(): string
-	{
-		
+	public function getTelefono(): string{
 		return $this->data['numero_telefono'];
-
 	}
 
 	#uuid
-	public function getUuid(): string
-	{
-		
+	public function getUuid(): string{
 		return $this->data['uuid'];
-
 	}
 
 
 
-	//El user puede editar los siguientes datos
+
+
+	//SETTERS
 
 	#nombre
-	public function setNombre(string $nombre): void
-	{
-
+	public function setNombre(string $nombre): void{
 		$this->data['nombre'] = $nombre;
-
 	}
 
 	#correo
-	public function setCorreo(string $correo): void
-	{
-		
+	public function setCorreo(string $correo): void{
 		$this->data['correo'] = $correo;
-
 	}
 
 	#telefono
-	public function setTelefono(string $telefono): void
-	{
-		
+	public function setTelefono(string $telefono): void{
 		$this->data['numero_telefono'] = $telefono;
-
 	}
 
 	#telefono
-	public function setPassword(string $pass): void
-	{
-		
+	public function setPassword(string $pass): void{
 		$this->data['password'] = $pass;
-
 	}
 
-
-
-
-	//Metodos para la trata de informacion
-
-	public function toArray(): array
-	{
-
+	public function toArray(): array{
 		return $this->data;
-
-	}
-
-
-
-
-	public function dataToUpdate(): array
-	{
-
-		$dataToUpdate['correo'] = $this->data['correo'];
-		$dataToUpdate['password'] = $this->data['password'];
-		$dataToUpdate['nombre'] = $this->data['nombre'];
-		$dataToUpdate['numero_telefono'] = $this->data['numero_telefono'];
-		$dataToUpdate['uuid'] = $this->data['uuid'];
-
-		return $dataToUpdate;
-
 	}
 
 
 
 
 
+	//METODOS a usar cuando se CREA un nuevo USER
+
+	#Encryptar los el PASS del USER
+	private function encryptPass(mixed $pass): string{
+		return password_hash($pass, PASSWORD_BCRYPT);
+	}
+
+	#Generarle un UUID 
+	private function generateUuid(): string {
+		return Uuid::uuid4()->toString();
+		//Nota: Debo considerar si delegarle esto a la Abstraccion SQL
+	}
 
 }

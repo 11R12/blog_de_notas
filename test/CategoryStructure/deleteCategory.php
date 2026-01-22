@@ -19,4 +19,5 @@ $allCategorys = new CategoryStructure($conexion);
 
 $user = $forAllUsers->readUserWith("melendezGmail.com");
 
-if($allCategorys->deleteCategory('9', $user->getUuid())) echo "La Categoria Ha Sido Eliminada";
+#colocar un ID existente de categoria
+if($allCategorys->deleteCategory('11', $user->getUuid())) echo "La Categoria Ha Sido Eliminada";
